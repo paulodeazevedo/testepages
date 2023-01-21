@@ -5,7 +5,7 @@
 </head>
 
 <body>
-    <button onclick="Navega('comparacerveja')">Confere Mega</button>
+    <button onclick="Navega('conferemega')">Confere Mega</button>
     <button onclick="Navega('comparacerveja')">Compara Cerveja</button>
 </body>
 <script>
@@ -13,7 +13,7 @@
     function Navega(novoPath) {
         var urlAtual = window.location.href;
         urlAtual = LimpaUrl(urlAtual);
-        window.open(`${urlAtual}/${novoPath}`)
+        window.open(`${urlAtual}${novoPath}`)
     }
 
     function LimpaUrl(urlAtual) {
