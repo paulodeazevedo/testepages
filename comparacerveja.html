@@ -5,9 +5,121 @@
 </head>
 
 <body>
+    <h1>Compara Cerveja</h1>
 
+    <p>Cerveja 1</p>
+    <label>Quantidade ML</label>
+    <input id="cv1ml" value="300">
+    <label>Valor</label>
+    <input id="cv1vl" value="2,49">
+
+    <p>Cerveja 2</p>
+    <label>Quantidade ML</label>
+    <input id="cv2ml" value="350">
+    <label>Valor</label>
+    <input id="cv2vl" value="3,39">
+
+    <p>Cerveja 3</p>
+    <label>Quantidade ML</label>
+    <input id="cv3ml" value="100">
+    <label>Valor</label>
+    <input id="cv3vl" value="25">
+
+    <br><br><br><br>
+    <button onclick="ComparaCerveja()">Compara</button>
+
+    <br><br><br><br>
+    <div id="resultados"></div>
 </body>
+<style>
+    .resultados {
+        font-size: 30;
+        font-weight: bold;
+        color: green;
+        background: yellow;
+    }
+</style>
 <script>
+
+    function ComparaCerveja() {
+        var cv1ml = document.getElementById("cv1ml").value;
+        var cv1vl = document.getElementById("cv1vl").value;
+        cv1vl = (cv1vl + "").replace(",", ".");
+
+        var cv2ml = document.getElementById("cv2ml").value;
+        var cv2vl = document.getElementById("cv2vl").value;
+        cv2vl = (cv2vl + "").replace(",", ".");
+
+        var cv3ml = document.getElementById("cv3ml").value;
+        var cv3vl = document.getElementById("cv3vl").value;
+        cv3vl = (cv3vl + "").replace(",", ".");
+
+        var precoLitroCerveja1 = 1000 / cv1ml * cv1vl;
+        var precoLitroCerveja2 = 1000 / cv2ml * cv2vl;
+        var precoLitroCerveja3 = 1000 / cv3ml * cv3vl;
+
+        console.log(precoLitroCerveja1);
+        console.log(precoLitroCerveja2);
+        console.log(precoLitroCerveja3);
+
+
+        var resultados = `<label>Preço por litro cerveja 1: ${precoLitroCerveja1.toFixed(2)}</label><br><br>`;
+        resultados += `<label>Preço por litro cerveja 2: ${precoLitroCerveja2.toFixed(2)}</label><br><br>`;
+        if (precoLitroCerveja3.toFixed(2) != "NaN") {
+            resultados += `<label>Preço por litro cerveja 3: ${precoLitroCerveja3.toFixed(2)}</label><br><br>`;
+        }
+
+        if (cv3ml == "" || cv3vl == "") {
+
+            if (precoLitroCerveja1 < precoLitroCerveja2) {
+
+                resultados += `<label class='resultados'>Cerveja 1 ganhou!</label>`;
+
+            } else if (precoLitroCerveja2 < precoLitroCerveja1) {
+
+                resultados += `<label class='resultados'>Cerveja 2 ganhou!</label>`;
+
+            } else {
+
+                resultados += `<label class='resultados'>Tanto faz mesmo preço!</label>`;
+
+            }
+
+        } else {
+            if (precoLitroCerveja1 < precoLitroCerveja2 && precoLitroCerveja1 < precoLitroCerveja3) {
+
+                resultados += `<label class='resultados'>Cerveja 1 ganhou!</label>`;
+
+            } else if (precoLitroCerveja2 < precoLitroCerveja1 && precoLitroCerveja2 < precoLitroCerveja3) {
+
+                resultados += `<label class='resultados'>Cerveja 2 ganhou!</label>`;
+
+            } else if (precoLitroCerveja3 < precoLitroCerveja1 && precoLitroCerveja3 < precoLitroCerveja2) {
+
+                resultados += `<label class='resultados'>Cerveja 3 ganhou!</label>`;
+
+            } else if (precoLitroCerveja1 == precoLitroCerveja2 == precoLitroCerveja3) {
+
+                resultados += `<label class='resultados'>Tanto faz mesmo preço!</label>`;
+
+            } else if (precoLitroCerveja1 == precoLitroCerveja2 && precoLitroCerveja1 < precoLitroCerveja3) {
+
+                resultados += `<label class='resultados'>Cerveja 1 ou 2 tanto faz mesmo preço!</label>`;
+
+            } else if (precoLitroCerveja2 == precoLitroCerveja3 && precoLitroCerveja2 < precoLitroCerveja1) {
+
+                resultados += `<label class='resultados'>Cerveja 2 ou 3 tanto faz mesmo preço!</label>`;
+
+            } else if (precoLitroCerveja1 == precoLitroCerveja3 && precoLitroCerveja1 < precoLitroCerveja2) {
+
+                resultados += `<label class='resultados'>Cerveja 1 ou 3 tanto faz mesmo preço!</label>`;
+
+            }
+        }
+
+        var divResultados = document.getElementById("resultados");
+        divResultados.innerHTML = resultados;
+    }
 
 </script>
 
