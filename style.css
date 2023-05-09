@@ -1,0 +1,131 @@
+body {
+	margin: 0;
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	color: #333;
+}
+
+header {
+	background-color: #000;
+	color: #fff;
+	padding: 10px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.logo img {
+	height: 50px;
+	margin-right: 10px;
+}
+
+nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+}
+
+nav ul li {
+	margin: 0 10px;
+}
+
+nav ul li a {
+	color: #fff;
+	text-decoration: none;
+}
+
+main {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+section {
+	margin-bottom: 50px;
+}
+
+section h2 {
+	font-size: 28px;
+	margin-top: 0;
+}
+
+section p {
+	margin: 0 0 10px;
+}
+
+section a {
+	display: inline-block;
+	background-color: #000;
+	color: #fff;
+	padding: 10px 20px;
+	border-radius: 5px;
+	text-decoration: none;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	grid-gap: 20px;
+}
+
+.produto, .servico {
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 5px;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.produto h3, .servico h3 {
+	font-size: 24px;
+	margin-top: 0;
+}
+
+.produto p, .servico p {
+	margin: 0 0 10px;
+}
+
+.produto img {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.servico a {
+	display: block;
+	background-color: #000;
+	color: #fff;
+	padding: 10px 20px;
+	border-radius: 5px;
+	text-align: center;
+	text-decoration: none;
+}
+
+form label {
+	display: block;
+	margin-bottom: 5px;
+}
+
+form input, form textarea {
+	display: block;
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 10px;
+	border-radius: 5px;
+	border: none;
+}
+
+form button[type="submit"] {
+	background-color: #000;
+	color: #fff;
+	padding: 10px 20px;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+}
+
+footer {
+	background-color: #eee;
+	padding: 10px;
+	text-align: center;
+}

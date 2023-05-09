@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Afia Passos</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<header>
+		<div class="logo">
+			<img src="logo.png" alt="Logo da Afia Passos">
+			<h1>Afia Passos</h1>
+		</div>
+		<nav>
+			<ul>
+				<li><a href="#inicio">Início</a></li>
+				<li><a href="#produtos">Produtos</a></li>
+				<li><a href="#servicos">Serviços</a></li>
+				<li><a href="#contato">Contato</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main>
+		<section id="inicio">
+			<h2>Bem-vindo à Afia Passos</h2>
+			<p>Somos especializados em afiação de lâminas e venda de produtos para barbearia.</p>
+			<a href="#produtos">Confira nossas promoções</a>
+		</section>
+
+		<section id="produtos">
+			<h2>Nossos Produtos</h2>
+			<div class="grid">
+				<div class="produto">
+					<img src="produto1.jpg" alt="Produto 1">
+					<h3>Produto 1</h3>
+					<p>Descrição do Produto 1.</p>
+					<a href="#">Comprar</a>
+				</div>
+				<div class="produto">
+					<img src="produto2.jpg" alt="Produto 2">
+					<h3>Produto 2</h3>
+					<p>Descrição do Produto 2.</p>
+					<a href="#">Comprar</a>
+				</div>
+				<div class="produto">
+					<img src="produto3.jpg" alt="Produto 3">
+					<h3>Produto 3</h3>
+					<p>Descrição do Produto 3.</p>
+					<a href="#">Comprar</a>
+				</div>
+			</div>
+		</section>
+
+		<section id="servicos">
+			<h2>Nossos Serviços</h2>
+			<div class="grid">
+				<div class="servico">
+					<h3>Serviço 1</h3>
+					<p>Descrição do Serviço 1.</p>
+					<a href="#">Solicitar</a>
+				</div>
+				<div class="servico">
+					<h3>Serviço 2</h3>
+					<p>Descrição do Serviço 2.</p>
+					<a href="#">Solicitar</a>
+				</div>
+				<div class="servico">
+					<h3>Serviço 3</h3>
+					<p>Descrição do Serviço 3.</p>
+					<a href="#">Solicitar</a>
+				</div>
+			</div>
+		</section>
+
+		<section id="contato">
+			<h2>Contato</h2>
+			<form>
+			
+				<label for="nome">Nome:</label>
+				<input type="text" id="nome" name="nome" required>
+				<label for="email">E-mail:</label>
+				<input type="email" id="email" name="email" required>
+				<label for="mensagem">Mensagem:</label>
+				<textarea id="mensagem" name="mensagem" required></textarea>
+				<button type="submit">Enviar</button>
+			</form>
+		</section>
+	</main>
+
+	<footer>
+		<p>&copy; 2023 Afia Passos</p>
+	</footer>
+
+	<script src="script.js"></script>
+</body>
+</html>
