@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Termo — Jogo em um arquivo</title>
+  <style>
+    :root{
+      --bg:#0f1724; /* dark */
+      --card:#0b1220;
+      --text:#e6eef8;
+      --muted:#9fb0c8;
+      --green:#6aaa64;
+      --yellow:#c9b458;
+      --gray:#3a4752;
+      --accent:#2563eb;
+      --tile-size:64px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071021 0%,#07162b 100%);color:var(--text)}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .app{width:100%;max-width:820px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .board{display:grid;grid-template-rows:repeat(6, var(--tile-size));gap:8px;justify-content:center;padding:12px}
+    .row{display:grid;grid-template-columns:repeat(5, var(--tile-size));gap:8px}
+    .tile{width:var(--tile-size);height:var(--tile-size);display:flex;align-items:center;justify-content:center;background:transparent;border:2px solid rgba(255,255,255,0.06);font-weight:700;font-size:22px;text-transform:uppercase;border-radius:8px}
+    .tile.filled{border-color:rgba(255,255,255,0.08)}
+    .tile.flip{transition:transform 250ms ease-in;transform:rotateX(180deg)}
+
+    .keyboard{margin-top:12px;display:flex;flex-direction:column;gap:8px;align-items:center}
+    .krow{display:flex;gap:8px}
+    button.key{padding:12px 10px;border-radius:6px;border:none;background:rgba(255,255,255,0.04);color:var(--text);font-weight:700;cursor:pointer;min-width:42px}
+    button.key.wide{min-width:74px}
+    button.key:active{transform:translateY(1px)}
+
+    .key.green{background:var(--green);color:white}
+    .key.yellow{background:var(--yellow);color:white}
+    .key.gray{background:var(--gray);color:white}
+
+    .controls{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-bottom:8px}
+    .btn{background:var(--accent);color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .muted-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    .status{margin-top:8px;color:var(--muted);font-size:13px}
+
+    .footer{margin-top:14px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+    /* small screens */
+    @media (max-width:520px){
+      :root{--tile-size:52px}
+      .app{padding:12px}
+      h1{font-size:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="app" role="application" aria-label="Jogo Termo">
+      <header>
+        <div>
+          <h1>Termo</h1>
+          <p class="lead">Advinhe a palavra em 6 tentativas. Palavra em português (5 letras).</p>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <button id="newGame" class="btn" title="Novo jogo">Novo jogo</button>
+          <button id="shareBtn" class="muted-btn" title="Copiar resultado">Compartilhar</button>
+        </div>
+      </header>
+
+      <section class="board" id="board" aria-live="polite"></section>
+
+      <div class="keyboard" id="keyboard" aria-hidden="false"></div>
+
+      <div class="status" id="status"></div>
+
+      <div class="footer">
+        <div>Feito por você — pronto para hospedar no GitHub Pages</div>
+        <div> Dicas: use teclado físico ou clique nas teclas.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  /* ===== Termo — single file =====
+     - Palavra de 5 letras
+     - 6 tentativas
+     - Lista reduzida de palavras (edite a `WORDS` array se quiser)
+     - Compartilhar copia resultado simples no clipboard
+  */
+
+  // Lista curta — adicione/edite conforme desejar
+  const WORDS = [
+    'AMORO','CASAR','FORÇA','LIVRO','MAÇA','PEDRA','FLORA','CANTO','VIVER','AMIGO',
+    'RAIOS','SONHO','BRISA','FELIZ','NOITE','SOLAR','GIRAS','SERRA','BANDO','VILAS',
+    'TERMO','BAILE','SAPOZ','PILAR','LINDA','REGAO','PILHA','MOTOR','FIMDO','CARRO',
+    'RAPAZ','GARAO','TRAGO','FARTA','CINCO','SEDEO','BOMDE','CHEIO','FAROL','PUDIM'
+  ].map(w=>w.toUpperCase());
+
+  const MAX_ROWS = 6;
+  const WORD_LEN = 5;
+  let solution = '';
+  let boardState = Array.from({length:MAX_ROWS}, ()=> Array(WORD_LEN).fill(''));
+  let row = 0;
+  let col = 0;
+  let isGameOver = false;
+  let keyboardState = {}; // letter -> class
+
+  const boardEl = document.getElementById('board');
+  const keyboardEl = document.getElementById('keyboard');
+  const statusEl = document.getElementById('status');
+  const newBtn = document.getElementById('newGame');
+  const shareBtn = document.getElementById('shareBtn');
+
+  function pickSolution(){
+    const idx = Math.floor(Math.random()*WORDS.length);
+    return WORDS[idx];
+  }
+
+  function createBoard(){
+    boardEl.innerHTML = '';
+    for(let r=0;r<MAX_ROWS;r++){
+      const rowDiv = document.createElement('div');
+      rowDiv.className='row';
+      for(let c=0;c<WORD_LEN;c++){
+        const tile = document.createElement('div');
+        tile.className='tile';
+        tile.id = `tile-${r}-${c}`;
+        tile.setAttribute('aria-label', `linha ${r+1} coluna ${c+1}`);
+        rowDiv.appendChild(tile);
+      }
+      boardEl.appendChild(rowDiv);
+    }
+  }
+
+  function createKeyboard(){
+    const rows = ['QWERTYUIOP','ASDFGHJKLÇ','ZXCVBNM'];
+    keyboardEl.innerHTML='';
+    rows.forEach((r,ri)=>{
+      const kr = document.createElement('div'); kr.className='krow';
+      for(const ch of r){
+        const btn = document.createElement('button');
+        btn.className='key'; btn.textContent = ch;
+        btn.dataset.key = ch;
+        btn.addEventListener('click', ()=>handleKey(ch));
+        kr.appendChild(btn);
+      }
+      if(ri===2){
+        const enter = document.createElement('button'); enter.className='key wide'; enter.textContent='Enter'; enter.dataset.key='Enter'; enter.addEventListener('click', ()=>handleKey('Enter'));
+        const back = document.createElement('button'); back.className='key wide'; back.textContent='Back'; back.dataset.key='Backspace'; back.addEventListener('click', ()=>handleKey('Backspace'));
+        kr.prepend(enter);
+        kr.append(back);
+      }
+      keyboardEl.appendChild(kr);
+    });
+  }
+
+  function updateTile(r,c){
+    const tile = document.getElementById(`tile-${r}-${c}`);
+    tile.textContent = boardState[r][c] || '';
+    if(boardState[r][c]) tile.classList.add('filled'); else tile.classList.remove('filled');
+  }
+
+  function handleKey(key){
+    if(isGameOver) return;
+    if(key==='Enter') return submitGuess();
+    if(key==='Backspace' || key==='Back') return deleteLetter();
+    // letter
+    if(key.length===1 && col<WORD_LEN){
+      boardState[row][col]=key.toUpperCase();
+      updateTile(row,col);
+      col++;
+    }
+  }
+
+  function deleteLetter(){
+    if(col>0){
+      col--; boardState[row][col]=''; updateTile(row,col);
+    }
+  }
+
+  function submitGuess(){
+    if(col!==WORD_LEN) { setStatus('Complete as 5 letras antes de enviar.'); return; }
+    const guess = boardState[row].join('').toUpperCase();
+    if(!WORDS.includes(guess)){
+      setStatus('Palavra não está na lista. (Edite a lista se quiser palavras novas)');
+      shakeRow(row);
+      return;
+    }
+    // avaliar cores
+    const evaluation = evaluateGuess(guess, solution);
+    flipRow(row, evaluation);
+
+    // atualizar teclado
+    evaluation.forEach((ev,i)=>{
+      const letter = guess[i];
+      const keyEl = findKeyButton(letter);
+      const prev = keyboardState[letter];
+      if(ev==='correct'){ keyboardState[letter]='green'; if(keyEl) keyEl.classList.remove('yellow','gray'); if(keyEl) keyEl.classList.add('green'); }
+      else if(ev==='present'){ if(prev!=='green'){ keyboardState[letter]='yellow'; if(keyEl) keyEl.classList.remove('green','gray'); if(keyEl) keyEl.classList.add('yellow'); } }
+      else{ if(!prev){ keyboardState[letter]='gray'; if(keyEl) keyEl.classList.add('gray'); } }
+    });
+
+    if(evaluation.every(x=>x==='correct')){
+      isGameOver=true; setStatus(`Parabéns! Você acertou: ${solution}`);
+      return;
+    }
+
+    row++; col=0;
+    if(row>=MAX_ROWS){ isGameOver=true; setStatus(`Fim de jogo — palavra: ${solution}`); }
+    else setStatus('Boa — próxima tentativa.');
+  }
+
+  function findKeyButton(letter){
+    return keyboardEl.querySelector(`button[data-key="${letter}"]`);
+  }
+
+  function evaluateGuess(guess, solution){
+    // retorna array de 'correct'|'present'|'absent'
+    const res = Array(WORD_LEN).fill('absent');
+    const solArr = solution.split('');
+    // primeira passagem: corretos
+    for(let i=0;i<WORD_LEN;i++){
+      if(guess[i]===solArr[i]){ res[i]='correct'; solArr[i]=null; }
+    }
+    // segunda: presentes
+    for(let i=0;i<WORD_LEN;i++){
+      if(res[i]==='correct') continue;
+      const idx = solArr.indexOf(guess[i]);
+      if(idx!==-1){ res[i]='present'; solArr[idx]=null; }
+    }
+    return res;
+  }
+
+  function flipRow(r, evaluation){
+    for(let c=0;c<WORD_LEN;c++){
+      const tile = document.getElementById(`tile-${r}-${c}`);
+      // animação simples: timeout em cascata
+      setTimeout(()=>{
+        tile.classList.add('flip');
+        // aplicar cor após pequena rotação
+        setTimeout(()=>{
+          tile.classList.remove('flip');
+          if(evaluation[c]==='correct'){ tile.style.background= 'var(--green)'; tile.style.border='none'; tile.style.color='white'; }
+          else if(evaluation[c]==='present'){ tile.style.background= 'var(--yellow)'; tile.style.border='none'; tile.style.color='white'; }
+          else { tile.style.background= 'var(--gray)'; tile.style.border='none'; tile.style.color='white'; }
+        }, 140);
+      }, c*200);
+    }
+  }
+
+  function setStatus(msg){ statusEl.textContent = msg; }
+
+  function shakeRow(r){
+    const tiles = Array.from({length:WORD_LEN}, (_,i)=>document.getElementById(`tile-${r}-${i}`));
+    tiles.forEach(t=>{ t.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:300}) });
+  }
+
+  function registerKeyboardEvents(){
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter') handleKey('Enter');
+      else if(e.key==='Backspace') handleKey('Backspace');
+      else{
+        const key = e.key.toUpperCase();
+        // permite letras portuguesas básicas: includes Ç
+        if(/^[A-ZÇ]$/.test(key)) handleKey(key);
+      }
+    });
+  }
+
+  function shareResult(){
+    // montar resumo simples: linhas com emojis
+    if(!solution) return;
+    let out = `TERMO - ${isGameOver && row<=MAX_ROWS ? (boardState[row-1].join('')===solution ? row : 'X') : row}/${MAX_ROWS}\n`;
+    for(let r=0;r<MAX_ROWS;r++){
+      const tiles = document.getElementById(`tile-${r}-0`) ? Array.from({length:WORD_LEN},(_,i)=>document.getElementById(`tile-${r}-${i}`)) : [];
+      if(tiles.length===0) continue;
+      // se vazias, pular
+      if(tiles.every(t=>!t.textContent)) continue;
+      // deduzir cor por background
+      let line='';
+      for(const t of tiles){
+        const bg = t.style.background;
+        if(bg.includes('var(--green)') || bg.includes('rgb')){
+          if(t.style.background==='var(--green)' || t.style.background.indexOf('6a')!==-1) line+='🟩';
+          else if(t.style.background==='var(--yellow)') line+='🟨';
+          else if(t.style.background==='var(--gray)') line+='⬛';
+          else line+='⬛';
+        } else { line+='⬛'; }
+      }
+      out += line + '\n';
+    }
+    navigator.clipboard?.writeText(out).then(()=>{ setStatus('Resultado copiado para a área de transferência!') }).catch(()=>{ setStatus('Não foi possível copiar — selecione e copie manualmente.') });
+  }
+
+  function newGame(){
+    solution = pickSolution();
+    boardState = Array.from({length:MAX_ROWS}, ()=> Array(WORD_LEN).fill(''));
+    row=0;col=0;isGameOver=false;keyboardState={};
+    setStatus('Boa sorte!');
+    createBoard(); createKeyboard();
+    // limpar estilos antigos
+    for(let r=0;r<MAX_ROWS;r++) for(let c=0;c<WORD_LEN;c++){ const t=document.getElementById(`tile-${r}-${c}`); if(t){ t.style.background=''; t.style.border='2px solid rgba(255,255,255,0.06)'; t.style.color='var(--text)'; }}
+    console.log('Solução (debug):', solution); // remove se quiser
+  }
+
+  newBtn.addEventListener('click', newGame);
+  shareBtn.addEventListener('click', shareResult);
+
+  // inicialização
+  createBoard(); createKeyboard(); registerKeyboardEvents(); newGame();
+
+  </script>
+</body>
+</html>
