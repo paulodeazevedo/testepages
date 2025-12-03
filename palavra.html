@@ -10,11 +10,11 @@
             --cor-fundo: #6E5C62;
             --cor-tecla: #4C4347;
             --cor-letra: #d7dadc;
-            --cor-letra-presente: #d3ad69;
+            --cor-letra-presente: tan;
             /* Amarelo */
-            --cor-letra-correta: #3aa394;
+            --cor-letra-correta: gray;
             /* Verde */
-            --cor-letra-errada: #312a2c;
+            --cor-letra-errada: black;
             /* Cinza Escuro */
             --cor-borda: #3a3a3c;
             --altura-teclado: 200px;
@@ -291,7 +291,7 @@
 
     <div class="mensagem" id="mensagem"></div>
     <div>
-        <p>Versão: 1.0 - Direitos: Paulo A. - Data: 02/12/2025</p>
+        <p>© Paulo A. - Versão: 1.1 - 03/12/2025</p>
     </div>
     <script>
         // --- CONFIGURAÇÃO DO JOGO ---
@@ -433,6 +433,7 @@
                 }
             }
         }
+
         function mostrarMensagem(texto, duracao = 1500) {
             mensagemEl.textContent = texto;
             mensagemEl.classList.add('visivel');
@@ -469,6 +470,10 @@
             }
         }
 
+        // FUNÇÃO AUXILIAR: Remove acentos/diacríticos (copie esta função para a seção de utilidades)
+        const normalizarString = (str) => {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ç/g, 'c');
+        };
         // --- FUNÇÕES DE RENDERIZAÇÃO E CURSOR ---
 
         function removerAtivoDeTodasAsCelulas() {
@@ -626,7 +631,13 @@
         }
 
         function obterCorDaLetra(palpite, index) {
-            const letra = palpite[index];
+            // const letra = palpite[index];
+
+            // const letraNormalizada = normalizarString(letra);
+
+            const letraPalpite = palpite[index];
+            const letra = normalizarString(letraPalpite);
+
             if (palavraSecreta[index] === letra) {
                 return 'correta';
             }
@@ -788,11 +799,6 @@
                 return;
             }
 
-            // FUNÇÃO AUXILIAR: Remove acentos/diacríticos (copie esta função para a seção de utilidades)
-            const normalizarString = (str) => {
-                return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ç/g, 'c');
-            };
-
             const palpiteLowerCase = palpiteDigitado.toLowerCase();
             const palpiteNormalizado = normalizarString(palpiteLowerCase);
             const palavraSecretaNormalizada = normalizarString(palavraSecreta.toLowerCase());
@@ -841,7 +847,9 @@
 
             // 5. Fase: Verifica Corretas (Usa o palpite 'oficial' e a palavra secreta 'oficial')
             for (let i = 0; i < TAMANHO_PALAVRA; i++) {
-                const letra = palpite[i];
+
+                const letraPalpite = palpite[i];
+                const letra = normalizarString(letraPalpite);
 
                 // Garante que o DOM mostre a letra oficial (com acento)
                 palpiteLinhaEl.children[i].textContent = letra.toUpperCase();
