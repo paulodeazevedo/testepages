@@ -290,7 +290,7 @@
 
     <div class="mensagem" id="mensagem"></div>
     <div>
-        <p id="gatilho">© Paulo A. - Versão: 1.4 - 13/12/2025</p>
+        <p id="gatilho">© Paulo A. - Versão: 1.5 - 13/12/2025</p>
         <div id="log">log</div>
     </div>
     <div>
@@ -979,6 +979,7 @@
 
         btnLimparArmazenamento.addEventListener('click', () => {
             localStorage.clear();
+            mostrarMensagem(`Armanezamento limpo`, 1500);
         });
 
         compartilharBtn.addEventListener('click', () => {
@@ -1034,3 +1035,4 @@
 </body>
 
 </html>
+
