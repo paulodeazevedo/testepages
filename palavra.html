@@ -295,7 +295,7 @@
 
     <div class="mensagem" id="mensagem"></div>
     <div>
-        <p id="gatilho">© Paulo A. - Versão: 1.10 - 15/12/2025</p>
+        <p id="gatilho">© Paulo A. - Versão: 1.11 - 15/12/2025</p>
     </div>
     <div>
 
@@ -1077,22 +1077,10 @@
         }
 
         function desenharGrafico() {
-            // 1. Carregar o pacote do gráfico de colunas (ou outro tipo)
-            // 'corechart' inclui gráficos de coluna, barra, pizza, linha, etc.
-            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.load("current", { packages: ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
 
-            // 2. Definir uma função de callback que será executada quando o carregamento terminar
-            google.charts.setOnLoadCallback(desenharGrafico);
-
-            // A função que realmente desenha o gráfico
-            function desenharGrafico() {
-                // 3. Preparar os Dados
-                // Cria uma nova tabela de dados (DataTable)
-                const data = new google.visualization.DataTable();
-
-                // Adiciona as colunas (tipos e nomes)
-                data.addColumn('string', 'Acertos'); // Primeira coluna: Categoria (texto)
-                data.addColumn('number', 'Quantidade'); // Segunda coluna: Valor (número)
+            function drawChart() {
 
                 let dadosGrafico = [0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for (let i = 0; i < localStorage.length; i++) {
@@ -1102,67 +1090,49 @@
                         document.getElementById('grafico').innerHTML =
                             `${document.getElementById('grafico').innerHTML + item.tentativas.length}, <br><pre>${JSON.stringify(item, null, 2)}</pre>`;
 
-                        let linhaAtual = item.tentativas.length;
-                        if (linhaAtual == 1 && item.tentativas[0] == item.palavra) {
-                            dadosGrafico[1] = dadosGrafico[1] + 1;
+                        if (item.tentativas[item.tentativas.length - 1] == item.palavra) {
+                            dadosGrafico[item.tentativas.length] = dadosGrafico[item.tentativas.length] + 1;
                             dadosGrafico[7] = dadosGrafico[7] + 1;
 
-                        } else if (linhaAtual == 2 && item.tentativas[1] == item.palavra) {
-                            dadosGrafico[2] = dadosGrafico[2] + 1;
-                            dadosGrafico[7] = dadosGrafico[7] + 1;
-
-                        } else if (linhaAtual == 3 && item.tentativas[2] == item.palavra) {
-                            dadosGrafico[3] = dadosGrafico[3] + 1;
-                            dadosGrafico[7] = dadosGrafico[7] + 1;
-
-                        } else if (linhaAtual == 4 && item.tentativas[3] == item.palavra) {
-                            dadosGrafico[4] = dadosGrafico[4] + 1;
-                            dadosGrafico[7] = dadosGrafico[7] + 1;
-
-                        } else if (linhaAtual == 5 && item.tentativas[4] == item.palavra) {
-                            dadosGrafico[5] = dadosGrafico[5] + 1;
-                            dadosGrafico[7] = dadosGrafico[7] + 1;
-
-                        } else if (linhaAtual == 6) {
-                            if (item.tentativas[5] == item.palavra) {
-                                dadosGrafico[6] = dadosGrafico[6] + 1;
-                                dadosGrafico[7] = dadosGrafico[7] + 1;
-                            } else {
-                                dadosGrafico[8] = dadosGrafico[8] + 1;
-                            }
+                        } else if (item.tentativas.length == 6) {
+                            dadosGrafico[8] = dadosGrafico[8] + 1;
                         }
                     }
                 }
 
                 document.getElementById('vitorias').innerHTML = `Vitórias: ${dadosGrafico[7]}`;
                 document.getElementById('derrotas').innerHTML = `Derrotas: ${dadosGrafico[8]}`;
-
                 document.getElementById('grafico').innerHTML = `${document.getElementById('grafico').innerHTML}${dadosGrafico}`;
 
-                // Adiciona as linhas (os dados reais)
-                data.addRows([
-                    ['1', dadosGrafico[1]],
-                    ['2', dadosGrafico[2]],
-                    ['3', dadosGrafico[3]],
-                    ['4', dadosGrafico[4]],
-                    ['5', dadosGrafico[5]],
-                    ['6', dadosGrafico[6]]
+
+                var data = google.visualization.arrayToDataTable([
+                    ["Acertos", "Quantidade", { role: "style" }],
+                    ["1 ", dadosGrafico[1], "blue"],
+                    ["2", dadosGrafico[2], "blue"],
+                    ["3", dadosGrafico[3], "blue"],
+                    ["4", dadosGrafico[4], "blue"],
+                    ["5", dadosGrafico[5], "blue"],
+                    ["6", dadosGrafico[6], "blue"]
                 ]);
 
-                // 4. Configurar as Opções do Gráfico
-                const options = {
-                    title: 'Desempenho',
-                    hAxis: { title: '', titleTextStyle: { color: '#333' } },
-                    vAxis: { title: 'Vitórias', minValue: 0 },
-                    legend: { position: 'none' } // Remove a legenda, pois só temos uma série
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0, 1,
+                    {
+                        calc: "stringify",
+                        sourceColumn: 1,
+                        type: "string",
+                        role: "annotation",
+                    },
+                    2]);
+
+                var options = {
+                    title: "Desempenho",
+                    bar: { groupWidth: "80%" },
+                    legend: { position: "none" },
+                    vAxis: { title: 'Quantidade Acertos', titleTextStyle: { fontName: 'Arial' }, minValue: 0 },
                 };
-
-                // 5. Desenhar o Gráfico
-                // Cria uma instância do gráfico de colunas (ColumnChart)
-                const chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-
-                // Desenha o gráfico na div especificada, usando os dados e as opções
-                chart.draw(data, options);
+                var chart = new google.visualization.BarChart(document.getElementById("chart_div"));
+                chart.draw(view, options);
             }
         }
 
