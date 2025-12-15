@@ -260,6 +260,11 @@
         .mensagem.visivel {
             opacity: 1;
         }
+
+        #chart_div {
+            width: 100%;
+            height: 400px;
+        }
     </style>
 </head>
 
@@ -268,7 +273,6 @@
         <h1>PALAVRA</h1>
         <p>ID do Jogo: <span id="currentId"></span></p>
         <p id="palavraRevelada" style="font-weight: bold; color: #ffeb3b; min-height: 1.2em; margin-top: 5px;"></p>
-        <div id="log"></div>
     </div>
 
     <div class="tabuleiro-container">
@@ -291,11 +295,15 @@
 
     <div class="mensagem" id="mensagem"></div>
     <div>
-        <p id="gatilho">© Paulo A. - Versão: 1.6 - 14/12/2025</p>
+        <p id="gatilho">© Paulo A. - Versão: 1.7 - 15/12/2025</p>
     </div>
     <div>
         <button id="btnLimparArmazenamento" style="display: none;" cli>Limpar Armazenamento</button>
+        <div id="log"></div>
+        <div id="chart_div"></div>
     </div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
         // --- CONFIGURAÇÃO DO JOGO ---
         const PALAVRAS = [
@@ -486,7 +494,8 @@
                 tentativas: tentativas,
                 linhaAtual: linhaAtual,
                 jogoFinalizado: jogoFinalizado,
-                id: idNumericoAtual
+                id: idNumericoAtual,
+                dataJogo: Date.now()
             };
             localStorage.setItem(`palavra-jogo-${idNumericoAtual}`, JSON.stringify(estado));
         }
@@ -497,12 +506,18 @@
             if (estadoSalvo) {
                 const estado = JSON.parse(estadoSalvo);
 
+                let dataJogo = new Date(2025, 12, 14, 0, 0, 0);
+                if (estado.dataJogo) {
+                    dataJogo = new Date(estado.dataJogo);
+                }
+
                 if (estado.palavra === palavraSecreta) {
                     palavraSecreta = estado.palavra;
                     tentativas = estado.tentativas;
                     linhaAtual = estado.linhaAtual;
                     jogoFinalizado = estado.jogoFinalizado;
                     id = estado.id;
+                    dataJogo = estado.dataJogo
                 } else {
                     tentativas = [];
                 }
@@ -741,9 +756,14 @@
                 tentativas[linhaAtual] = '';
             }
 
+            const celula = tabuleiroEl.children[linhaAtual].children[letraAtual];
+            const celulaAtiva = celula.classList.contains('ativa');
+
             // 1. Preenche o palpite com espaços (para garantir 5 posições) e atualiza a letra na posição do cursor
             let palpiteArray = tentativas[linhaAtual].padEnd(TAMANHO_PALAVRA, ' ').split('');
-            palpiteArray[letraAtual] = letra;
+            if (celulaAtiva) {
+                palpiteArray[letraAtual] = letra;
+            }
 
             // Salva o palpite garantindo 5 letras se estiver cheio (sem trimEnd)
             tentativas[linhaAtual] = palpiteArray.join('').trimEnd();
@@ -753,8 +773,6 @@
             }
 
             // 2. Atualiza a célula no DOM
-            const celula = tabuleiroEl.children[linhaAtual].children[letraAtual];
-            const celulaAtiva = celula.classList.contains('ativa');
             if (celulaAtiva) {
                 celula.textContent = letra.toUpperCase();
                 celula.classList.add('preenchida');
@@ -841,7 +859,7 @@
 
             if (palpiteLowerCase !== palavraSecretaNormalizada && !palavraValidaExiste) {
                 mostrarMensagem("Palavra não reconhecida ou inválida.", 1500);
-                document.getElementById('log').innerHTML =  `Palpite: ${palpiteLowerCase}`;
+                document.getElementById('log').innerHTML = `Palpite: ${palpiteLowerCase}`;
                 return;
             }
 
@@ -930,7 +948,7 @@
                     mostrarMensagem("O seu cérebro acionou o modo 'emergência' no último milissegundo. Por pouco! 😮‍💨", 10000);
                 } else if (tentativas.length == 6) {
                     mostrarMensagem("Até a minha avó de muletas teria acertado mais rápido! Mas parabéns, você conseguiu! 🐌", 10000);
-                }else{
+                } else {
                     mostrarMensagem("Parabéns, você conseguiu! 😉", 10000);
                 }
 
@@ -1030,10 +1048,75 @@
             }
         }
 
+        function desenharGrafico() {
+            // 1. Carregar o pacote do gráfico de colunas (ou outro tipo)
+            // 'corechart' inclui gráficos de coluna, barra, pizza, linha, etc.
+            google.charts.load('current', { 'packages': ['corechart'] });
+
+            // 2. Definir uma função de callback que será executada quando o carregamento terminar
+            google.charts.setOnLoadCallback(desenharGrafico);
+
+            // A função que realmente desenha o gráfico
+            function desenharGrafico() {
+                // 3. Preparar os Dados
+                // Cria uma nova tabela de dados (DataTable)
+                const data = new google.visualization.DataTable();
+
+                // Adiciona as colunas (tipos e nomes)
+                data.addColumn('string', 'Acertos'); // Primeira coluna: Categoria (texto)
+                data.addColumn('number', 'Quantidade'); // Segunda coluna: Valor (número)
+
+                let dadosGrafico = [0, 0, 0, 0, 0, 0, 0];
+                for (let i = 0; i < localStorage.length; i++) {
+                    let item = (JSON.parse(localStorage.getItem(localStorage.key(i))));
+
+                    if (item.jogoFinalizado) {
+                        if (item.linhaAtual == 1) {
+                            dadosGrafico[1] = dadosGrafico[1] + 1;
+                        } else if (item.linhaAtual == 2) {
+                            dadosGrafico[2] = dadosGrafico[2] + 1;
+                        } else if (item.linhaAtual == 3) {
+                            dadosGrafico[3] = dadosGrafico[3] + 1;
+                        } else if (item.linhaAtual == 4) {
+                            dadosGrafico[4] = dadosGrafico[4] + 1;
+                        } else if (item.linhaAtual == 5) {
+                            dadosGrafico[5] = dadosGrafico[5] + 1;
+                        } else if (item.linhaAtual == 6) {
+                            dadosGrafico[6] = dadosGrafico[6] + 1;
+                        }
+                    }
+                }
+
+                // Adiciona as linhas (os dados reais)
+                data.addRows([
+                    ['1', dadosGrafico[1]],
+                    ['2', dadosGrafico[2]],
+                    ['3', dadosGrafico[3]],
+                    ['4', dadosGrafico[4]],
+                    ['5', dadosGrafico[5]],
+                    ['6', dadosGrafico[6]]
+                ]);
+
+                // 4. Configurar as Opções do Gráfico
+                const options = {
+                    title: 'Desempenho',
+                    hAxis: { title: 'Acertos', titleTextStyle: { color: '#333' } },
+                    vAxis: { minValue: 0 },
+                    legend: { position: 'none' } // Remove a legenda, pois só temos uma série
+                };
+
+                // 5. Desenhar o Gráfico
+                // Cria uma instância do gráfico de colunas (ColumnChart)
+                const chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+
+                // Desenha o gráfico na div especificada, usando os dados e as opções
+                chart.draw(data, options);
+            }
+        }
+
         init();
+        desenharGrafico();
     </script>
 </body>
 
 </html>
-
-
