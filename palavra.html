@@ -298,9 +298,13 @@
         <p id="gatilho">© Paulo A. - Versão: 1.7 - 15/12/2025</p>
     </div>
     <div>
+
+    </div>
+        <div id="chart_div"></div>
+    <div>
         <button id="btnLimparArmazenamento" style="display: none;" cli>Limpar Armazenamento</button>
         <div id="log"></div>
-        <div id="chart_div"></div>
+        <div id="grafico"></div>
     </div>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -1070,6 +1074,8 @@
                 for (let i = 0; i < localStorage.length; i++) {
                     let item = (JSON.parse(localStorage.getItem(localStorage.key(i))));
 
+                    document.getElementById('grafico').innerHTML = document.getElementById('grafico').innerHTML + item.linhaAtual + ', ';
+
                     if (item.jogoFinalizado) {
                         if (item.linhaAtual == 1) {
                             dadosGrafico[1] = dadosGrafico[1] + 1;
@@ -1087,6 +1093,8 @@
                     }
                 }
 
+                console.log(dadosGrafico);
+                document.getElementById('grafico').innerHTML = document.getElementById('grafico').innerHTML + ' - ' + dadosGrafico;
                 // Adiciona as linhas (os dados reais)
                 data.addRows([
                     ['1', dadosGrafico[1]],
