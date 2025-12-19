@@ -295,7 +295,7 @@
 
     <div class="mensagem" id="mensagem"></div>
     <div>
-        <p id="gatilho">© Paulo A. - Versão: 1.11 - 15/12/2025</p>
+        <p id="gatilho">© Paulo A. - Versão: 1.12 - 19/12/2025</p>
     </div>
     <div>
 
@@ -710,11 +710,11 @@
             if (normalizarString(palavraSecreta[index]) === normalizarString(letra)) {
                 return 'correta';
             }
-            if (palavraSecreta.includes(letra)) {
+            if (normalizarString(palavraSecreta).includes(normalizarString(letra))) {
 
                 const mapaSecreta = {};
                 for (const char of palavraSecreta) {
-                    mapaSecreta[char] = (mapaSecreta[char] || 0) + 1;
+                    mapaSecreta[normalizarString(char)] = (mapaSecreta[normalizarString(char)] || 0) + 1;
                 }
 
                 let contagemAtual = 0;
@@ -821,7 +821,7 @@
                 celula.classList.add('preenchida');
             }
         }
-        // CORRIGIDO: Lógica de apagar revisada para ser mais robusta.
+
         function lidarComApagar() {
             let palpite = tentativas[linhaAtual] || '';
             let palpiteArray = palpite.padEnd(TAMANHO_PALAVRA, ' ').split('');
@@ -913,7 +913,7 @@
             // Mapeamento de letras para coloração (como antes)
             const mapaSecreta = {};
             for (const letra of palavraSecreta) {
-                mapaSecreta[letra] = (mapaSecreta[letra] || 0) + 1;
+                mapaSecreta[normalizarString(letra)] = (mapaSecreta[normalizarString(letra)] || 0) + 1;
             }
 
             const palpiteCorreto = new Array(TAMANHO_PALAVRA).fill(null);
@@ -941,7 +941,7 @@
                 const letra = palpite[i];
                 const celulaEl = palpiteLinhaEl.children[i];
 
-                if (mapaSecreta[normalizarString(letra)] && mapaSecreta[normalizarString(letra)] > 0) {
+                if (mapaSecreta[letra] && mapaSecreta[letra] > 0) {
                     celulaEl.classList.remove('ativa');
                     celulaEl.classList.add('presente');
                     celulaEl.value = letra;
