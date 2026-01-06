@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bússola Web Pro</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            color: white;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .compass-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 8px solid #333;
+            background: radial-gradient(circle, #222 0%, #000 100%);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Rosa dos Ventos */
+        .compass-dial {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.1s ease-out;
+        }
+
+        .mark {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+            padding-top: 10px;
+            box-sizing: border-box;
+        }
+
+        .n { color: #ff3b30; } /* Norte em Vermelho */
+        .s, .e, .w { color: #fff; }
+
+        /* Agulha Indicadora Estática */
+        .needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 40px;
+            background-color: #ff3b30;
+            transform: translate(-50%, -150%);
+            z-index: 10;
+            border-radius: 2px;
+        }
+
+        #degree-display {
+            margin-top: 30 - 0px;
+            font-size: 48px;
+            font-weight: 200;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:active {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="degree-display">0°</div>
+
+    <div class="compass-container">
+        <div class="needle"></div>
+        <div class="compass-dial" id="dial">
+            <div class="mark n" style="transform: rotate(0deg)">N</div>
+            <div class="mark e" style="transform: rotate(90deg)">E</div>
+            <div class="mark s" style="transform: rotate(180deg)">S</div>
+            <div class="mark w" style="transform: rotate(270deg)">W</div>
+        </div>
+    </div>
+
+    <button id="start-btn">Ativar Bússola</button>
+
+    <script>
+        const dial = document.getElementById('dial');
+        const degreeDisplay = document.getElementById('degree-display');
+        const startBtn = document.getElementById('start-btn');
+
+        async function startCompass() {
+            // Verifica suporte para iOS 13+ que exige permissão
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                try {
+                    const response = await DeviceOrientationEvent.requestPermission();
+                    if (response === 'granted') {
+                        initListener();
+                    } else {
+                        alert("Acesso negado.");
+                    }
+                } catch (e) {
+                    alert("Erro ao solicitar permissão.");
+                }
+            } else {
+                // Outros dispositivos (Android ou navegadores desktop com sensores)
+                initListener();
+            }
+        }
+
+        function initListener() {
+            window.addEventListener('deviceorientation', (event) => {
+                let heading = 0;
+
+                // iOS usa webkitCompassHeading para o norte real
+                if (event.webkitCompassHeading) {
+                    heading = event.webkitCompassHeading;
+                } else {
+                    // Android usa alpha (pode precisar de calibração manual)
+                    heading = 360 - event.alpha;
+                }
+
+                const roundedHeading = Math.round(heading);
+                
+                // Atualiza o texto
+                degreeDisplay.innerText = `${roundedHeading}°`;
+                
+                // Gira o mostrador da bússola
+                dial.style.transform = `rotate(${-roundedHeading}deg)`;
+            }, true);
+
+            // Esconde o botão após ativar
+            startBtn.style.display = 'none';
+        }
+
+        startBtn.addEventListener('click', startCompass);
+    </script>
+</body>
+</html>
