@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Prime - Prestação de Serviços</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --azul-escuro: #003399;
+            --azul-claro: #0055ff;
+            --amarelo: #ffcc00;
+            --branco: #ffffff;
+            --cinza-claro: #f4f4f4;
+            --instagram: #E1306C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--branco);
+        }
+
+        /* --- Header & Navegação --- */
+        header {
+            background-color: var(--azul-escuro);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            color: var(--amarelo);
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .social-header a {
+            color: var(--branco);
+            font-size: 1.5rem;
+            transition: 0.3s;
+        }
+
+        .social-header a:hover {
+            color: var(--amarelo);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            background: linear-gradient(rgba(0, 51, 153, 0.8), rgba(0, 51, 153, 0.8)), url('imagens/hero.jpg') no-repeat center center/cover;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--branco);
+            padding: 0 20px;
+            margin-top: 60px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        /* --- Botões --- */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-contato {
+            background-color: var(--amarelo);
+            color: var(--azul-escuro);
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-insta {
+            background-color: transparent;
+            color: var(--branco);
+            border: 2px solid var(--branco);
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-insta:hover {
+            background-color: var(--branco);
+            color: var(--instagram);
+        }
+
+        .btn-contato:hover {
+            transform: scale(1.05);
+            background-color: #ffd633;
+        }
+
+        /* --- Seção de Serviços --- */
+        .servicos {
+            padding: 100px 5%;
+            background-color: var(--cinza-claro);
+            text-align: center;
+        }
+
+        .section-title {
+            color: var(--azul-escuro);
+            margin-bottom: 50px;
+            font-size: 2rem;
+        }
+
+        .grid-servicos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 900px) {
+            .grid-servicos {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .grid-servicos {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--branco);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border-bottom: 5px solid var(--amarelo);
+        }
+
+        .card i {
+            font-size: 40px;
+            color: var(--azul-escuro);
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: var(--azul-escuro);
+        }
+
+        /* --- Lista Extra --- */
+        .lista-extra {
+            padding: 80px 5%;
+            background-color: var(--azul-escuro);
+            color: var(--branco);
+        }
+
+        .lista-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .item-tag {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--amarelo);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .footer-socials {
+            margin-bottom: 20px;
+        }
+
+        .footer-socials a {
+            color: var(--branco);
+            font-size: 1.8rem;
+            margin: 0 10px;
+            transition: 0.3s;
+        }
+
+        .footer-socials a:hover {
+            color: var(--amarelo);
+        }
+
+        /* --- Botões Flutuantes --- */
+        .float-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .float-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+            text-decoration: none;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        .whatsapp-float { background-color: #25d366; }
+        .insta-float { background-color: var(--instagram); }
+
+        .float-btn:hover { transform: scale(1.1); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .btn-group { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="imagens/logo.png" alt="Central Prime Logo" style="width: 100px; height: 60px;">
+        <a href="#" class="logo">Central Prime</a>
+    </header>
+
+    <section class="hero">
+        <h1>Você está ocupado demais?</h1>
+        <p>Não deixe os problemas se acumularem. A Central Prime cuida de tudo para você com excelência e rapidez.</p>
+        <div class="btn-group">
+            <a href="https://wa.me/5535998824461" class="btn-contato">
+                <i class="fab fa-whatsapp"></i> (35) 99882-4461
+            </a>
+            <a href="https://www.instagram.com/centralprimeservicos/" target="_blank" class="btn-insta">
+                <i class="fab fa-instagram"></i> Siga no Instagram
+            </a>
+        </div>
+    </section>
+
+    <section class="servicos">
+        <h2 class="section-title">Nossos Principais Serviços</h2>
+        <div class="grid-servicos">
+            <div class="card"><i class="fas fa-bolt"></i><h3>Elétrica</h3><p>Reparos e instalações seguras.</p></div>
+            <div class="card"><i class="fas fa-faucet"></i><h3>Hidráulica</h3><p>Vazamentos e encanamentos.</p></div>
+            <div class="card"><i class="fas fa-paint-roller"></i><h3>Pintura</h3><p>Acabamento profissional.</p></div>
+            <div class="card"><i class="fas fa-hammer"></i><h3>Reformas</h3><p>Pequenos e grandes reparos.</p></div>
+            <div class="card"><i class="fas fa-leaf"></i><h3>Jardinagem</h3><p>Manutenção de áreas externas.</p></div>
+            <div class="card"><i class="fas fa-car"></i><h3>Limpeza de Carros</h3><p>Cuidado com seu veículo.</p></div>
+        </div>
+    </section>
+
+    <section class="lista-extra">
+        <h2 style="text-align: center; margin-bottom: 30px; color: var(--amarelo);">Mais de 30 serviços disponíveis:</h2>
+        <div class="lista-container">
+            <span class="item-tag">Manutenção Preventiva</span>
+            <span class="item-tag">Chaveiros</span>
+            <span class="item-tag">Pedreiros</span>
+            <span class="item-tag">Serviços de Organização</span>
+            <span class="item-tag">Emergência</span>
+            <span class="item-tag">Condomínios</span>
+            <span class="item-tag">Instalações Diversas</span>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-socials">
+            <a href="https://wa.me/5535998824461" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/centralprimeservicos/" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>&copy; 2024 Central Prime de Serviços. Passos e Região.</p>
+    </footer>
+
+    <div class="float-container">
+        <a href="https://www.instagram.com/centralprimeservicos/" class="float-btn insta-float" target="_blank">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://wa.me/5535998824461" class="float-btn whatsapp-float" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
+</body>
+</html>
