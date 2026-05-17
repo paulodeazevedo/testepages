@@ -187,9 +187,12 @@
             gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
+            width: 100%;
+            max-width: 760px;
         }
         .key {
-            min-width: 38px;
+            flex: 1 1 36px;
+            min-width: 32px;
             padding: 12px 10px;
             border-radius: 8px;
             border: none;
@@ -255,14 +258,23 @@
                 gap: 6px;
             }
             .key {
-                min-width: 30px;
+                min-width: 28px;
                 padding: 10px 8px;
             }
             .key.wide {
-                min-width: 56px;
+                min-width: 54px;
             }
         }
         @media (max-width: 520px) {
+            .keyboard {
+                width: 100%;
+            }
+            .key-row {
+                justify-content: space-between;
+            }
+            .key {
+                flex: 1 1 30px;
+            }
             .boards { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
             .board { padding: 10px; }
             .cell {
