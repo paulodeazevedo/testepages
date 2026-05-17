@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termo 3 em 1</title>
+    <style>
+        :root {
+            --bg: #121214;
+            --panel: #1f1f23;
+            --panel-strong: #2c2c31;
+            --text: #e6e6e6;
+            --muted: #8b8b95;
+            --correct: #538d4e;
+            --present: #b59f3b;
+            --absent: #3a3a3c;
+            --border: #3a3a3c;
+            --highlight: #5b84c4;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, sans-serif;
+            background: radial-gradient(circle at top, #26262c 0%, #121214 55%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .page {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            padding: 0 14px;
+        }
+        header {
+            text-align: center;
+            margin: 0 auto 4px;
+            max-width: 760px;
+        }
+        h1 {
+            margin: 0;
+            font-size: clamp(1.8rem, 2.4vw, 2.8rem);
+            letter-spacing: 0.12em;
+        }
+        p.description {
+            color: var(--muted);
+            max-width: 780px;
+            margin: 12px auto 0;
+            line-height: 1.6;
+        }
+        .mode-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0 10px;
+            width: min(760px, 100%);
+        }
+        .mode-button,
+        .mode-button.selected {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            color: white;
+            background: #3c82c7;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+        .mode-button:hover { transform: translateY(-1px); }
+        .mode-button.selected {
+            background: #5b84c4;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 18px 0 14px;
+            width: min(720px, 100%);
+        }
+        button,
+        .manual-button {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 18px;
+            font-weight: 700;
+            cursor: pointer;
+            color: white;
+            background: #3c82c7;
+            min-width: 120px;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+        button:hover,
+        .manual-button:hover { transform: translateY(-1px); }
+        .manual-button { background: #4c618a; }
+        .boards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(280px, 1fr));
+            gap: 18px;
+        }
+        .board {
+            background: #1e1e24;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 22px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 360px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+        }
+        .board.selected {
+            border-color: rgba(91,132,196,0.8);
+            box-shadow: 0 0 0 1px rgba(91,132,196,0.35);
+        }
+        .board-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .board-title {
+            margin: 0;
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .board-status {
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+        .grid {
+            display: grid;
+            gap: 8px;
+            margin-top: 4px;
+            grid-auto-rows: minmax(62px, 1fr);
+        }
+        .row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        .cell {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: #18181d;
+            border: 2px solid var(--border);
+            display: grid;
+            place-items: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 10px;
+            transition: transform 0.1s ease;
+        }
+        .cell.filled { border-color: #56565f; }
+        .cell.correct { background: var(--correct); border-color: var(--correct); color: white; }
+        .cell.present { background: var(--present); border-color: var(--present); color: white; }
+        .cell.absent { background: var(--absent); border-color: var(--absent); color: white; }
+        .board-footer {
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.5;
+            opacity: 0.88;
+        }
+        .keyboard {
+            margin-top: 26px;
+            display: grid;
+            gap: 10px;
+            justify-items: center;
+            width: min(760px, 100%);
+            margin-inline: auto;
+        }
+        .key-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .key {
+            min-width: 38px;
+            padding: 12px 10px;
+            border-radius: 8px;
+            border: none;
+            background: var(--panel-strong);
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s ease, background 0.15s ease;
+        }
+        .key:hover { transform: translateY(-1px); }
+        .key.wide { min-width: 66px; }
+        .key.small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            background: #2b2b31;
+        }
+        .key.correct { background: var(--correct); color: white; }
+        .key.present { background: var(--present); color: white; }
+        .key.absent { background: var(--absent); color: white; }
+        .message {
+            position: fixed;
+            left: 50%;
+            bottom: 28px;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.95);
+            color: #121212;
+            padding: 12px 18px;
+            border-radius: 999px;
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 10;
+        }
+        .message.show { opacity: 1; }
+        @media (max-width: 900px) {
+            .boards { grid-template-columns: 1fr; }
+            .board { padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <h1>TERMO 3 EM 1</h1>
+            <p class="description">Tr�s jogos independentes com as mesmas regras do Termo. Selecione o jogo, jogue com o teclado na tela ou f�sico e use "Definir palavras" para colocar suas pr�prias palavras de 5 letras.</p>
+        </header>
+        <div class="mode-menu" id="modeMenu"></div>
+        <div class="controls">
+            <button id="newGame">Novo jogo</button>
+            <button class="manual-button" id="manualWords">Definir palavras</button>
+        </div>
+        <div class="boards" id="boards"></div>
+        <div class="keyboard" id="keyboard"></div>
+    </div>
+    <div class="message" id="message"></div>
+    <script>
+        const WORD_LENGTH = 5;
+        const MAX_ROWS = 6;
+        const GAME_MODES = [
+            { label: '1 palavra', count: 1 },
+            { label: '2 palavras', count: 2 },
+            { label: '4 palavras', count: 4 }
+        ];
+        let boardCount = 1;
+        const VALID_WORDS = [
+            'muito','sobre','mesmo','tempo','amigo','minha','novas','hotel','mundo','saber','final','tarde','unica','trago','poder','dizer','caixa','faixa','limpo','lindo','porta','carta','norte','legal','vindo','amiga','ponto','ideal','chefe','nunca','antes','santo','dessa','poder','sonho','bravo','vagao','jogos','valer','morte','turma','amado','maria','cobre','corpo','tempo','tango','carro','ceder','ferro','folha','fecho','banco','livro','venda','filme','peixe','piano','tetra','havia','renda','julho','abril','valor','morar','filha','pobre','desta','costa','chega','prato','lindo','pleno','salvo','cargo','custo','clima','tempo','mudar','quase','ondea','quais','nossa'
+        ];
+        const KEY_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+
+        const boards = [];
+        let activeBoard = 0;
+        let keyboardState = {};
+
+        const boardsElement = document.getElementById('boards');
+        const keyboardElement = document.getElementById('keyboard');
+        const modeMenu = document.getElementById('modeMenu');
+        const messageElement = document.getElementById('message');
+        const newGameButton = document.getElementById('newGame');
+        const manualWordsButton = document.getElementById('manualWords');
+
+        function randomWord() {
+            return VALID_WORDS[Math.floor(Math.random() * VALID_WORDS.length)].toUpperCase();
+        }
+
+        function showMessage(text) {
+            messageElement.textContent = text;
+            messageElement.classList.add('show');
+            clearTimeout(messageElement.hideTimeout);
+            messageElement.hideTimeout = setTimeout(() => messageElement.classList.remove('show'), 1800);
+        }
+
+        function createBoards() {
+            boardsElement.innerHTML = '';
+            boards.forEach((board, index) => {
+                const section = document.createElement('section');
+                section.className = 'board' + (index === activeBoard ? ' selected' : '');
+                section.dataset.board = index;
+                section.innerHTML = `
+                    <div class="board-header">
+                        <div>
+                            <h2 class="board-title">Jogo ${index + 1}</h2>
+                            <div class="board-status" id="status-${index}">${board.solved ? 'Resolvido' : 'Tentativa 1 de 6'}</div>
+                        </div>
+                        <button type="button" class="key small" data-action="select" data-board="${index}">Selecionar</button>
+                    </div>
+                    <div class="grid" id="grid-${index}"></div>
+                    <div class="board-footer">Clique no quadro para jogar neste jogo.</div>
+                `;
+                section.addEventListener('click', () => selectBoard(index));
+                boardsElement.appendChild(section);
+                renderBoard(index);
+            });
+        }
+
+        function createModeButtons() {
+            modeMenu.innerHTML = '';
+            GAME_MODES.forEach((mode, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'mode-button' + (boardCount === mode.count ? ' selected' : '');
+                button.textContent = mode.label;
+                button.addEventListener('click', () => setMode(index));
+                modeMenu.appendChild(button);
+            });
+        }
+
+        function setMode(modeIndex) {
+            if (modeIndex < 0 || modeIndex >= GAME_MODES.length) return;
+            boardCount = GAME_MODES[modeIndex].count;
+            activeBoard = 0;
+            createModeButtons();
+            resetBoards();
+            selectBoard(0);
+            showMessage(`Modo ${GAME_MODES[modeIndex].label} ativado`);
+        }
+
+        function resetBoards(targets) {
+            if (!targets) {
+                targets = Array.from({ length: boardCount }, () => randomWord());
+            }
+            boards.length = 0;
+            for (let i = 0; i < boardCount; i += 1) {
+                boards.push({
+                    target: targets[i],
+                    guesses: [],
+                    current: '',
+                    solved: false,
+                    finished: false
+                });
+            }
+            keyboardState = {};
+            createBoards();
+            createKeyboard();
+            renderKeyboard();
+        }
+
+        function selectBoard(index) {
+            if (index < 0 || index >= boards.length) return;
+            activeBoard = index;
+            document.querySelectorAll('.board').forEach((boardElement, boardIndex) => {
+                boardElement.classList.toggle('selected', boardIndex === index);
+            });
+            updateStatusText(index);
+        }
+
+        function renderBoard(index) {
+            const board = boards[index];
+            const grid = document.getElementById(`grid-${index}`);
+            if (!grid) return;
+            grid.innerHTML = '';
+            for (let row = 0; row < MAX_ROWS; row += 1) {
+                const rowEl = document.createElement('div');
+                rowEl.className = 'row';
+                const guess = board.guesses[row]?.word || '';
+                const statuses = board.guesses[row]?.status || [];
+                for (let col = 0; col < WORD_LENGTH; col += 1) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    const letter = row === board.guesses.length ? board.current[col] || '' : guess[col] || '';
+                    if (letter) cell.classList.add('filled');
+                    cell.textContent = letter || '';
+                    if (statuses[col]) cell.classList.add(statuses[col]);
+                    rowEl.appendChild(cell);
+                }
+                grid.appendChild(rowEl);
+            }
+            updateStatusText(index);
+        }
+
+        function updateStatusText(index) {
+            const board = boards[index];
+            const status = document.getElementById(`status-${index}`);
+            if (!status) return;
+            if (board.solved) {
+                status.textContent = 'Resolvido em ' + (board.guesses.length) + ' tentativa(s)';
+            } else if (board.finished) {
+                status.textContent = 'Acabou. Palavra: ' + board.target;
+            } else {
+                status.textContent = `Tentativa ${board.guesses.length + 1} de 6`;
+            }
+        }
+
+        function createKeyboard() {
+            keyboardElement.innerHTML = '';
+            KEY_ROWS.forEach((row) => {
+                const rowEl = document.createElement('div');
+                rowEl.className = 'key-row';
+                row.split('').forEach((letter) => {
+                    const key = document.createElement('button');
+                    key.type = 'button';
+                    key.className = 'key';
+                    key.textContent = letter;
+                    key.dataset.key = letter;
+                    key.addEventListener('click', () => handleKey(letter));
+                    rowEl.appendChild(key);
+                });
+                keyboardElement.appendChild(rowEl);
+            });
+            const bottom = document.createElement('div');
+            bottom.className = 'key-row';
+            const enter = document.createElement('button');
+            enter.type = 'button';
+            enter.className = 'key wide';
+            enter.textContent = 'ENTRAR';
+            enter.dataset.key = 'ENTER';
+            enter.addEventListener('click', () => handleKey('ENTER'));
+            const back = document.createElement('button');
+            back.type = 'button';
+            back.className = 'key wide';
+            back.textContent = 'APAGAR';
+            back.dataset.key = 'BACKSPACE';
+            back.addEventListener('click', () => handleKey('BACKSPACE'));
+            bottom.appendChild(enter);
+            bottom.appendChild(back);
+            keyboardElement.appendChild(bottom);
+        }
+
+        function renderKeyboard() {
+            document.querySelectorAll('.key').forEach((key) => {
+                const letter = key.dataset.key;
+                if (!letter || letter === 'ENTER' || letter === 'BACKSPACE') return;
+                const state = keyboardState[letter];
+                key.classList.remove('correct', 'present', 'absent');
+                if (state) key.classList.add(state);
+            });
+        }
+
+        function updateKeyboardState(word, statuses) {
+            statuses.forEach((status, index) => {
+                const letter = word[index];
+                const current = keyboardState[letter];
+                if (current === 'correct') return;
+                if (current === 'present' && status === 'absent') return;
+                keyboardState[letter] = status;
+            });
+        }
+
+        function getGuessStatus(guess, target) {
+            const result = Array(WORD_LENGTH).fill('absent');
+            const targetLetters = target.split('');
+            guess.split('').forEach((letter, index) => {
+                if (targetLetters[index] === letter) {
+                    result[index] = 'correct';
+                    targetLetters[index] = null;
+                }
+            });
+            guess.split('').forEach((letter, index) => {
+                if (result[index] !== 'correct') {
+                    const position = targetLetters.indexOf(letter);
+                    if (position !== -1) {
+                        result[index] = 'present';
+                        targetLetters[position] = null;
+                    }
+                }
+            });
+            return result;
+        }
+
+        function handleKey(key) {
+            const board = boards[activeBoard];
+            if (board.solved || board.finished) return;
+            if (key === 'ENTER') {
+                if (board.current.length !== WORD_LENGTH) {
+                    showMessage('Digite 5 letras antes de enviar.');
+                    return;
+                }
+                const guess = board.current;
+                if (!VALID_WORDS.includes(guess.toLowerCase())) {
+                    showMessage('Palavra n�o est� na lista v�lida.');
+                    return;
+                }
+                const status = getGuessStatus(guess, board.target);
+                board.guesses.push({word: guess, status});
+                updateKeyboardState(guess, status);
+                board.current = '';
+                if (guess === board.target) {
+                    board.solved = true;
+                    showMessage(`Jogo ${activeBoard + 1} acertado!`);
+                } else if (board.guesses.length >= MAX_ROWS) {
+                    board.finished = true;
+                    showMessage(`Fim do jogo ${activeBoard + 1}. Palavra: ${board.target}`);
+                }
+                renderBoard(activeBoard);
+                renderKeyboard();
+                return;
+            }
+            if (key === 'BACKSPACE') {
+                board.current = board.current.slice(0, -1);
+                renderBoard(activeBoard);
+                return;
+            }
+            if (board.current.length >= WORD_LENGTH) return;
+            const letter = key.toUpperCase();
+            if (!/^[A-Z]$/.test(letter)) return;
+            board.current += letter;
+            renderBoard(activeBoard);
+        }
+
+        function askManualWords() {
+            const entry = prompt(`Digite ${boardCount} palavra(s) de ${WORD_LENGTH} letras separadas por vírgula ou espaço:`);
+            if (!entry) return;
+            const words = entry
+                .toUpperCase()
+                .replace(/[ÁÀÂÃÄ]/g, 'A')
+                .replace(/[ÉÈÊË]/g, 'E')
+                .replace(/[ÍÌÎÏ]/g, 'I')
+                .replace(/[ÓÒÔÕÖ]/g, 'O')
+                .replace(/[ÚÙÛÜ]/g, 'U')
+                .replace(/Ç/g, 'C')
+                .split(/[,\s]+/)
+                .filter(Boolean);
+            if (words.length !== boardCount) {
+                showMessage(`Informe exatamente ${boardCount} palavras de ${WORD_LENGTH} letras.`);
+                return;
+            }
+            if (words.some((word) => word.length !== WORD_LENGTH || !/^[A-Z]+$/.test(word))) {
+                showMessage(`Cada palavra deve ter ${WORD_LENGTH} letras sem números.`);
+                return;
+            }
+            resetBoards(words);
+            selectBoard(0);
+            showMessage('Palavras definidas!');
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') event.preventDefault();
+            if (event.key === 'Backspace') handleKey('BACKSPACE');
+            if (event.key === 'Enter') handleKey('ENTER');
+            const letter = event.key.toUpperCase();
+            if (/^[A-Z]$/.test(letter)) handleKey(letter);
+        });
+
+        newGameButton.addEventListener('click', () => {
+            resetBoards();
+            selectBoard(0);
+        });
+        manualWordsButton.addEventListener('click', askManualWords);
+
+        createModeButtons();
+        resetBoards();
+        selectBoard(0);
+    </script>
+</body>
+</html>
