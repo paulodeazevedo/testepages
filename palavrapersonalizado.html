@@ -288,16 +288,26 @@
         @media (max-width: 420px) {
             .boards { grid-template-columns: repeat(2, minmax(130px, 1fr)); gap: 8px; }
             .board { padding: 8px; }
+            .grid { gap: 5px; }
+            .row { gap: 4px; }
             .cell {
-                font-size: 0.9rem;
-                min-height: 32px;
+                font-size: 0.85rem;
+                min-height: 28px;
+            }
+            .keyboard {
+                width: 100%;
+            }
+            .key-row {
+                justify-content: space-between;
+                gap: 4px;
             }
             .key {
-                min-width: 26px;
+                min-width: 24px;
                 padding: 8px 6px;
+                font-size: 0.85rem;
             }
             .key.wide {
-                min-width: 50px;
+                min-width: 48px;
             }
         }
     </style>
@@ -385,14 +395,8 @@
                 section.dataset.board = index;
                 section.innerHTML = `
                     <div class="board-header">
-                        <div>
-                            <h2 class="board-title">Jogo ${index + 1}</h2>
-                            <div class="board-status" id="status-${index}">${board.solved ? 'Resolvido' : `Tentativa 1 de ${getMaxRows()}`}</div>
-                        </div>
-                        <button type="button" class="key small" data-action="select" data-board="${index}">Selecionar</button>
                     </div>
                     <div class="grid" id="grid-${index}"></div>
-                    <div class="board-footer">Clique no quadro para jogar neste jogo.</div>
                 `;
                 section.addEventListener('click', () => selectBoard(index));
                 boardsElement.appendChild(section);
