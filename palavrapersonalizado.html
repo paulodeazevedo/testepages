@@ -186,14 +186,14 @@
         .key-row {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             justify-content: center;
             width: 100%;
             max-width: 760px;
         }
         .key {
             flex: 1 1 36px;
-            min-width: 32px;
+            min-width: 0;
             padding: 12px 10px;
             border-radius: 8px;
             border: none;
@@ -202,9 +202,10 @@
             font-weight: 700;
             cursor: pointer;
             transition: transform 0.1s ease, background 0.15s ease;
+            box-sizing: border-box;
         }
         .key:hover { transform: translateY(-1px); }
-        .key.wide { min-width: 66px; }
+        .key.wide { min-width: 56px; flex: 1 1 66px; }
         .key.small {
             padding: 8px 12px;
             font-size: 0.85rem;
@@ -271,8 +272,10 @@
                 width: 100%;
             }
             .key-row {
-                justify-content: space-between;
+                justify-content: center;
             }
+            .key { padding: 10px 8px; }
+            .key.wide { min-width: 48px; }
             .key {
                 flex: 1 1 28px;
             }
@@ -299,9 +302,11 @@
                 width: 100%;
             }
             .key-row {
-                justify-content: space-between;
+                justify-content: center;
                 gap: 4px;
             }
+            .key { padding: 8px 6px; font-size: 0.85rem; }
+            .key.wide { min-width: 44px; }
             .key {
                 min-width: 24px;
                 padding: 8px 6px;
@@ -328,7 +333,7 @@
         <div class="keyboard" id="keyboard"></div>
     </div>
     <div class="message" id="message"></div>
-    1.0
+    v1.1
     <script>
         const WORD_LENGTH = 5;
         const MAX_ROWS = 6;
@@ -541,8 +546,8 @@
             back.textContent = 'APAGAR';
             back.dataset.key = 'BACKSPACE';
             back.addEventListener('click', () => handleKey('BACKSPACE'));
-            bottom.appendChild(enter);
             bottom.appendChild(back);
+            bottom.appendChild(enter);
             keyboardElement.appendChild(bottom);
         }
 
@@ -649,28 +654,37 @@
         }
 
         function askManualWords() {
-            const entry = prompt(`Digite ${boardCount} palavra(s) de ${WORD_LENGTH} letras separadas por vErgula ou espaCo:`);
+            const entry = prompt(`Digite ${boardCount} palavra(s) de ${WORD_LENGTH} letras separadas por vírgula ou espaço:`);
             if (!entry) return;
-            const words = entry
-                .toUpperCase()
-                .toUpperCase()
-                .replace(/[ÁÀÂÃÄ]/g, 'A')
-                .replace(/[ÉÈÊË]/g, 'E')
-                .replace(/[ÍÌÎÏ]/g, 'I')
-                .replace(/[ÓÒÔÕÖ]/g, 'O')
-                .replace(/[ÚÙÛÜ]/g, 'U')
-                .replace(/Ç/g, 'C')
-                .split(/[,\s]+/)
-                .filter(Boolean);
-            if (words.length !== boardCount) {
+            const raw = entry.split(/[,\s]+/).filter(Boolean);
+            if (raw.length !== boardCount) {
                 showMessage(`Informe exatamente ${boardCount} palavras de ${WORD_LENGTH} letras.`);
                 return;
             }
-            if (words.some((word) => word.length !== WORD_LENGTH || !/^[A-Z]+$/.test(word))) {
-                showMessage(`Cada palavra deve ter ${WORD_LENGTH} letras sem nUmeros.`);
+            const normalized = raw.map((w) => {
+                const up = w.toUpperCase();
+                return up.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/Ç/g, 'C');
+            });
+            if (normalized.some((word) => word.length !== WORD_LENGTH || !/^[A-Z]+$/.test(word))) {
+                showMessage(`Cada palavra deve ter ${WORD_LENGTH} letras sem números.`);
                 return;
             }
-            resetBoards(words);
+            // Validate against VALID_WORDS (which is lowercase list) after removing accents
+            const validSet = new Set(VALID_WORDS.map(w => w.toLowerCase()));
+            const added = [];
+            for (let i = 0; i < normalized.length; i += 1) {
+                const lowered = normalized[i].toLowerCase();
+                if (!validSet.has(lowered)) {
+                    // Add unknown word to session dictionary
+                    VALID_WORDS.push(lowered);
+                    validSet.add(lowered);
+                    added.push(normalized[i]);
+                }
+            }
+            if (added.length) {
+                showMessage(`Palavra(s) adicionada(s) ao dicionário da sessão: ${added.join(', ')}`);
+            }
+            resetBoards(normalized);
             selectBoard(0);
             showMessage('Palavras definidas!');
         }
