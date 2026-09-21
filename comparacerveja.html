@@ -13,10 +13,10 @@
             <div class="input-format">
                 <div class="campo">
                     <label>Quantidade ML</label>
-                    <input id="cv1ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv1vl" onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }">
+                    <input id="cv1ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv1vl">
 
                     <label>Valor</label>
-                    <input id="cv1vl" type="number" inputmode="decimal" enterkeyhint="next" data-next="cv2ml" onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }">
+                    <input id="cv1vl" type="number" inputmode="decimal" enterkeyhint="next" data-next="cv2ml">
                 </div>
             </div>
         </div>
@@ -26,9 +26,9 @@
             <div class="input-format">
                 <div class="campo">
                     <label>Quantidade ML</label>
-                    <input id="cv2ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv2vl" onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }">
+                    <input id="cv2ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv2vl">
                     <label>Valor</label>
-                    <input id="cv2vl" type="number" inputmode="decimal" enterkeyhint="next" data-next="cv3ml" onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }">
+                    <input id="cv2vl" type="number" inputmode="decimal" enterkeyhint="next" data-next="cv3ml">
                 </div>
             </div>
         </div>
@@ -38,9 +38,9 @@
             <div class="input-format">
                 <div class="campo">
                     <label>Quantidade ML</label>
-                    <input id="cv3ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv3vl" onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }">
+                    <input id="cv3ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv3vl">
                     <label>Valor</label>
-                    <input id="cv3vl" type="number" inputmode="decimal" enterkeyhint="done" onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' }); }">
+                    <input id="cv3vl" type="number" inputmode="decimal" enterkeyhint="done" data-next="">
                 </div>
             </div>
         </div>
@@ -112,6 +112,30 @@
     }
 </style>
 <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const campos = document.querySelectorAll('input[data-next]');
+
+        campos.forEach(function (campo) {
+            const moverParaProximo = function (event) {
+                const key = event.key || event.code;
+                if (key === 'Enter' || key === 'NumpadEnter' || event.keyCode === 13) {
+                    event.preventDefault();
+
+                    const proximo = document.getElementById(campo.dataset.next);
+                    if (proximo) {
+                        proximo.focus();
+                    } else {
+                        document.getElementById('cv3vl')?.blur();
+                        document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            };
+
+            campo.addEventListener('keydown', moverParaProximo);
+            campo.addEventListener('keyup', moverParaProximo);
+        });
+    });
 
     function ComparaCerveja() {
         var cv1ml = document.getElementById("cv1ml").value;
