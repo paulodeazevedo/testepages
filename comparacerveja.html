@@ -5,35 +5,97 @@
 </head>
 
 <body>
-    <h1>Compara Cerveja</h1>
+    <div>
+        <h1>Compara Cerveja</h1>
 
-    <p>Cerveja 1</p>
-    <label>Quantidade ML</label>
-    <input id="cv1ml">
-    <label>Valor</label>
-    <input id="cv1vl">
+        <div>
+            <p>Cerveja 1</p>
 
-    <p>Cerveja 2</p>
-    <label>Quantidade ML</label>
-    <input id="cv2ml">
-    <label>Valor</label>
-    <input id="cv2vl">
+            <div class="input-format">
+                <div class="campo">
+                    <label>Quantidade ML</label>
+                    <input id="cv1ml" type="text" inputmode="numeric">
 
-    <p>Cerveja 3</p>
-    <label>Quantidade ML</label>
-    <input id="cv3ml">
-    <label>Valor</label>
-    <input id="cv3vl">
+                    <label>Valor</label>
+                    <input id="cv1vl" type="number" inputmode="decimal">
+                </div>
+            </div>
+        </div>
 
-    <br><br><br><br>
-    <button onclick="ComparaCerveja()">Compara</button>
+        <div>
+            <p>Cerveja 2</p>
+            <div class="input-format">
+                <div class="campo">
+                    <label>Quantidade ML</label>
+                    <input id="cv2ml" type="text" inputmode="numeric">
+                    <label>Valor</label>
+                    <input id="cv2vl" type="number" inputmode="decimal">
+                </div>
+            </div>
+        </div>
 
-    <br><br><br><br>
-    <div id="resultados"></div>
+        <div>
+            <p>Cerveja 3</p>
+            <div class="input-format">
+                <div class="campo">
+                    <label>Quantidade ML</label>
+                    <input id="cv3ml" type="text" inputmode="numeric">
+                    <label>Valor</label>
+                    <input id="cv3vl" type="number" inputmode="decimal">
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <button onclick="ComparaCerveja()">Compara</button>
+        </div>
+
+        <div>
+            <div id="resultados"></div>
+        </div>
+    </div>
 </body>
 <style>
+    .input-format {
+        display: flex;
+        width: 100%;
+    }
+
+    p {
+        font-size: 300%;
+    }
+
+    .campo {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        font-size: 200%;
+    }
+
+    .campo label {
+        margin-bottom: 5px;
+    }
+
+    .campo input {
+        width: 100%;
+        font-size: 150%;
+    }
+
+    button {
+        width: 100%;
+        height: 10%;
+        margin-top: 30px;
+    }
+
+    .calculo {
+        font-size: 200%;
+        font-weight: bold;
+        color: green;
+
+    }
+
     .resultados {
-        font-size: 30;
+        font-size: 300%;
         font-weight: bold;
         color: green;
         background: yellow;
@@ -63,10 +125,10 @@
         console.log(precoLitroCerveja3);
 
 
-        var resultados = `<label>Preço por litro cerveja 1: ${precoLitroCerveja1.toFixed(2)}</label><br><br>`;
-        resultados += `<label>Preço por litro cerveja 2: ${precoLitroCerveja2.toFixed(2)}</label><br><br>`;
+        var resultados = `<label class="calculo">Preço por litro cerveja 1: ${precoLitroCerveja1.toFixed(2)}</label><br><br>`;
+        resultados += `<label class="calculo">Preço por litro cerveja 2: ${precoLitroCerveja2.toFixed(2)}</label><br><br>`;
         if (precoLitroCerveja3.toFixed(2) != "NaN") {
-            resultados += `<label>Preço por litro cerveja 3: ${precoLitroCerveja3.toFixed(2)}</label><br><br>`;
+            resultados += `<label class="calculo">Preço por litro cerveja 3: ${precoLitroCerveja3.toFixed(2)}</label><br><br>`;
         }
 
         if (cv3ml == "" || cv3vl == "") {
