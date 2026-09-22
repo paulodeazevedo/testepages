@@ -13,10 +13,13 @@
             <div class="input-format">
                 <div class="campo">
                     <label>Quantidade ML</label>
-                    <input id="cv1ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv1vl">
+                    <input id="cv1ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv1vl"
+                        onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }">
 
                     <label>Valor</label>
-                    <input id="cv1vl" type="number" inputmode="decimal" enterkeyhint="next" data-next="cv2ml">
+                    <input id="cv1vl" type="text" inputmode="decimal" enterkeyhint="next" data-next="cv2ml"
+                        onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }""
+                        onkeyup=" mascaraValor(this)">
                 </div>
             </div>
         </div>
@@ -26,9 +29,12 @@
             <div class="input-format">
                 <div class="campo">
                     <label>Quantidade ML</label>
-                    <input id="cv2ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv2vl">
+                    <input id="cv2ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv2vl"
+                        onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }">
                     <label>Valor</label>
-                    <input id="cv2vl" type="number" inputmode="decimal" enterkeyhint="next" data-next="cv3ml">
+                    <input id="cv2vl" type="text" inputmode="decimal" enterkeyhint="next" data-next="cv3ml"
+                        onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }"
+                        onkeyup="mascaraValor(this)">
                 </div>
             </div>
         </div>
@@ -38,9 +44,12 @@
             <div class="input-format">
                 <div class="campo">
                     <label>Quantidade ML</label>
-                    <input id="cv3ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv3vl">
+                    <input id="cv3ml" type="text" inputmode="numeric" enterkeyhint="next" data-next="cv3vl"
+                        onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById(this.dataset.next)?.focus(); }">
                     <label>Valor</label>
-                    <input id="cv3vl" type="number" inputmode="decimal" enterkeyhint="done" data-next="">
+                    <input id="cv3vl" type="text" inputmode="decimal" enterkeyhint="done" data-next=""
+                        onkeydown="if (event.key === 'Enter') { event.preventDefault(); document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }"
+                        onkeyup="mascaraValor(this)">
                 </div>
             </div>
         </div>
@@ -136,6 +145,20 @@
             campo.addEventListener('keyup', moverParaProximo);
         });
     });
+
+    function mascaraValor(elemento) {
+
+        var valorCampo = parseInt(document.getElementById(elemento.id).value.replace(',', ''));
+        var valor = valorCampo.toString();
+
+        if (valor.length <= 0 || valor == "NaN") {
+            return;
+        } else if (valor.length <= 2) {
+            document.getElementById(elemento.id).value = `0,${valor}`;
+        } else {
+            document.getElementById(elemento.id).value = `${valor.substring(0, valor.length - 2)},${valor.substring(valor.length - 2, valor.length)}`;
+        }
+    }
 
     function ComparaCerveja() {
         var cv1ml = document.getElementById("cv1ml").value;
