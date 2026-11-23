@@ -875,10 +875,16 @@
 
         let pontoInicial = new Date(inicio);
 
-        // Se for hoje, começa a distribuir a partir de agora.
-        if (selectedDate === hoje && agora > pontoInicial) {
-            pontoInicial = new Date(agora);
-        }
+        // Se for hoje, começa a distribuir a partir da última marcação.
+// Se não houver marcação, começa no horário inicial configurado.
+if (selectedDate === hoje) {
+    const marcacoes = obterMarcacoesDoDia(selectedDate);
+
+    if (marcacoes.length > 0) {
+        const ultimaMarcacao = marcacoes[marcacoes.length - 1];
+        pontoInicial = new Date(ultimaMarcacao.data);
+    }
+}
 
         // Se for um dia passado, não exibe sugestões.
         if (selectedDate < hoje) {
