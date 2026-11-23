@@ -198,6 +198,18 @@
                 <div id="calendario"></div>
             </div>
 
+            <h5 class="mt-4">Próximos horários sugeridos</h5>
+
+            <p class="text-muted small-text">
+                Os horários são recalculados automaticamente após cada marcação.
+            </p>
+
+            <div id="listaSugestoes">
+                <p class="text-muted">
+                    Configure sua meta e seus horários para visualizar as sugestões.
+                </p>
+            </div>
+
             <!-- DETALHES DO DIA -->
             <div id="detalhesDia" class="mt-4">
 
@@ -288,17 +300,7 @@
                 ></div>
             </div>
 
-            <h5 class="mt-4">Próximos horários sugeridos</h5>
-
-            <p class="text-muted small-text">
-                Os horários são recalculados automaticamente após cada marcação.
-            </p>
-
-            <div id="listaSugestoes">
-                <p class="text-muted">
-                    Configure sua meta e seus horários para visualizar as sugestões.
-                </p>
-            </div>
+            
 
         </div>
     </div>
@@ -630,7 +632,7 @@
                         <td class="${classes}" data-date="${chave}">
                             <strong>${dia}</strong>
                             <div class="day-count">
-                                ${quantidade > 0 ? quantidade + ' marcações' : '0'}
+                                ${quantidade > 0 ? quantidade + ' x' : '0'}
                             </div>
                         </td>
                     `;
